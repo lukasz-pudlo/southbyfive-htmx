@@ -2,10 +2,13 @@ from django.db import models
 
 
 class Season(models.Model):
-    season_start_year = models.CharField(max_length=4)
+    # 2526 for 2025/2026
+    season = models.CharField(max_length=4, unique=True)
 
     def __str__(self):
-        return f"{self.season_start_year}/{int(self.season_start_year)+1}"
+        first_part = self.season[:2]
+        second_part = self.season[2:]
+        return f"{first_part}/{second_part}"
 
 
 class Race(models.Model):
