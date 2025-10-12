@@ -23,7 +23,11 @@ class Race(models.Model):
     )
     season = models.CharField(
         max_length=9,
-    )
+    def __str__(self):
+        return self.get_park_display()
+
+    class Meta:
+        unique_together = ['park', 'season']
 
 
 class Runner(models.Model):
@@ -40,9 +44,15 @@ class Runner(models.Model):
         choices=GENDER_CHOICES,
     )
 
+    def __str__(self):
+        return self.full_name
+
 
 class Result(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     runner = models.ForeignKey(Runner, on_delete=models.CASCADE)
     position = models.IntegerField()
     time = models.DurationField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
