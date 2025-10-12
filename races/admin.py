@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import Race, Runner, Result
+from .models import Race, Runner, Result, Season
+
+
+class SeasonAdmin(admin.ModelAdmin):
+    pass
 
 
 class RaceAdmin(admin.ModelAdmin):
@@ -14,6 +18,7 @@ class ResultAdmin(admin.ModelAdmin):
     pass
 
 
+admin.site.register(Season, SeasonAdmin)
 admin.site.register(Race, RaceAdmin)
 admin.site.register(Runner, RunnerAdmin)
 admin.site.register(Result, ResultAdmin)

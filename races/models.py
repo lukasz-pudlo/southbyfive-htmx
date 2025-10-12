@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class Season(models.Model):
+    season_start_year = models.CharField(max_length=4)
+
+    def __str__(self):
+        return f"{self.season_start_year}/{int(self.season_start_year)+1}"
+
+
 class Race(models.Model):
     PARK_CHOICES = {
         "KP": "King's Park",
