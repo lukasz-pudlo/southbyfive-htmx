@@ -21,8 +21,8 @@ class Race(models.Model):
         max_length=2,
         choices=PARK_CHOICES,
     )
-    season = models.CharField(
-        max_length=9,
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+
     def __str__(self):
         return self.get_park_display()
 
