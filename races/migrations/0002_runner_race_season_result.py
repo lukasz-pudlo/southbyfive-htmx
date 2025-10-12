@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='race',
             name='season',
-            field=models.CharField(default=0.9995064165844028, max_length=9),
+            field=models.CharField(default='2024-2025', max_length=9),
             preserve_default=False,
         ),
         migrations.CreateModel(
