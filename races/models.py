@@ -13,7 +13,7 @@ class Race(models.Model):
         "KP": "King's Park",
         "LP": "Linn Park",
         "RG": "Rouken Glen",
-        "PP": "Pollock Park",
+        "PP": "Pollok Park",
         "BP": "Bellahouston Park",
         "QP": "Queen's Park",
     }
