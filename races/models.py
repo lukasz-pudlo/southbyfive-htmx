@@ -38,4 +38,4 @@ class Result(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     runner = models.ForeignKey(Runner, on_delete=models.CASCADE)
     position = models.IntegerField()
-    time = models.DurationField(null=True)
+    time = models.DurationField(null=True, blank=True)
