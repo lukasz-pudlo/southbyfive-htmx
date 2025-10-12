@@ -150,3 +150,6 @@ static/
 
 # Media files
 media/
+
+# Personal notes
+DEV_NOTES.md
