@@ -4,7 +4,8 @@ from django.utils.text import slugify
 
 class Season(models.Model):
     # 2526 for 2025/2026
-    season = models.CharField(max_length=4, unique=True)
+    season = models.CharField(
+        max_length=4, unique=True, help_text="For 2025/2026 season, enter 2526")
 
     def __str__(self):
         first_part = self.season[:2]
