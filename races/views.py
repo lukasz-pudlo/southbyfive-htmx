@@ -30,3 +30,7 @@ def race_detail(request, slug):
     }
 
     return render(request, 'race_detail.html', context)
+
+
+def upload_race(request):
+    return render(request, 'upload.html')
