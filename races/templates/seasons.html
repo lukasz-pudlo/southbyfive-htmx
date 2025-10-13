@@ -4,11 +4,12 @@
   <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold text-blue-600">Seasons</h1>
   </div>
-  
-  {% for season in seasons %}
     <div class="container mx-auto p-4">
-        <p class="text-2xl font-medium text-black">{{ season.season }}</h5>
+      <ul>
+        {% for season in seasons %}
+          <li class="text-2xl font-medium text-black"><a href="{{season.season}}">{{ season.season }}</a></li>
+        {% endfor %}
+      </ul>
     </div>
-  {% endfor %}
 
 {% endblock %}
