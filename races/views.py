@@ -22,6 +22,16 @@ def races(request, season):
     return render(request, 'races.html', context)
 
 
+def all_races(request):
+    races = Race.objects.all()
+
+    context = {
+        'races': races
+    }
+
+    return render(request, 'all_races.html', context)
+
+
 def race_detail(request, slug):
     race = get_object_or_404(Race, slug=slug)
 
