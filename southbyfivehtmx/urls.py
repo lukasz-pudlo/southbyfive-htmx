@@ -20,7 +20,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('seasons/', include('races.urls')),
+    path('', include('races.urls')),
 ]
 
 if settings.DEBUG:
