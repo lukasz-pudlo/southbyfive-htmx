@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 
 class Season(models.Model):
@@ -25,9 +26,14 @@ class Race(models.Model):
         choices=PARK_CHOICES,
     )
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    slug = models.SlugField(blank=True, null=True)
 
     def __str__(self):
         return self.get_park_display()
+
+    def save(self, *args, **kwargs):
+        self.slug = f"{self.park.lower()}-{self.season.season}"
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['park', 'season']
