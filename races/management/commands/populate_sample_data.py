@@ -23,8 +23,23 @@ class Command(BaseCommand):
         for season in seasons:
             self.create_seasons(season)
 
+        self.create_races()
+
     def create_seasons(self, season):
         season_object = Season.objects.update_or_create(
             season=season
         )
         return season_object
+
+    def create_races(self, *args, **kwargs):
+        seasons = Season.objects.all()
+        print(f"Managed to retrieve seasons: {seasons}")
+        parks = ['KP', 'LP', 'RG', 'PP', 'BP', 'QP']
+        for season in seasons:
+            print(f"Creating races for season {season}")
+            for park in parks:
+                race_object = Race.objects.update_or_create(
+                    park=park,
+                    season=season
+                )
+        return race_object
