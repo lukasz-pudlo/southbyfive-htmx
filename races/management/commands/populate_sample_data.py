@@ -17,13 +17,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        seasons = ['2627', '2728', '2829']
+        # For season 2025/2026, enter 2526
+        seasons = ['2324', '2425', '2526']
 
         for season in seasons:
             self.create_seasons(season)
 
     def create_seasons(self, season):
-        season_object = Season.objects.create(
+        season_object = Season.objects.update_or_create(
             season=season
         )
         return season_object
