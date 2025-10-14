@@ -7,6 +7,22 @@ from races.models import Season, Race, Runner, Result
 fake = Faker()
 
 
+def generate_time_range(fake, min_time="15:30", max_time="45:00"):
+    min_parts = min_time.split(":")
+    max_parts = max_time.split(":")
+
+    min_seconds = int(min_parts[0]) * 60 + int(min_parts[1])
+    max_seconds = int(max_parts[0]) * 60 + int(max_parts[1])
+
+    random_seconds = fake.random_int(min=min_seconds, max=max_seconds)
+
+    minutes = random_seconds // 60
+    seconds = random_seconds % 60
+
+    # Add hours to the front of the returned string
+    return f"{00:02d}:{minutes:02d}:{seconds:02d}"
+
+
 class Command(BaseCommand):
     help = "Populate the database with mock runners and results"
 
@@ -51,6 +67,11 @@ class Command(BaseCommand):
         total_runners = runner_counter - 1
         print(f"Successfully created {total_runners} runners")
 
+        races = Race.objects.all()
+        runners = Runner.objects.all()
+        for runner in runners:
+            self.create_results(races[0], runner)
+
     def create_seasons(self, season):
         season_object = Season.objects.update_or_create(
             season=season
@@ -80,3 +101,16 @@ class Command(BaseCommand):
             gender=random_gender
         )
         return runner
+
+    def create_results(self, race, runner):
+        race_object = Race.objects.get(pk=race.pk)
+        print(f"Retrieved race: {race_object}")
+        time = generate_time_range(fake)
+        print(f"Generated fake time: {time}")
+        result = Result.objects.update_or_create(
+            race=race_object,
+            runner=runner,
+            position=1,
+            time=time
+        )
+        return result
