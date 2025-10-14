@@ -17,9 +17,22 @@ class Command(BaseCommand):
             default=100,
             help="Number of runners to create"
         )
+        parser.add_argument(
+            "--clear",
+            action="store_true",
+            help="Clear existing data before creating mock data"
+        )
 
     def handle(self, *args, **options):
         count = options['count']
+        clear = options['clear']
+
+        if clear:
+            print("Clearing existing data")
+            Season.objects.all().delete()
+            Runner.objects.all().delete()
+            print("Existing data cleared")
+
         # For season 2025/2026, enter 2526
         seasons = ['2324', '2425', '2526']
 
