@@ -71,9 +71,12 @@ class Command(BaseCommand):
         return race_object
 
     def create_runners(self, name):
-        print(f"Creating a runner with fake name: {name}")
+        gender_list = list(Runner.GENDER_CHOICES.keys())
+        random_gender = random.choice(gender_list)
+        print(
+            f"Creating a runner with fake name {name} and gender {random_gender}")
         runner = Runner.objects.update_or_create(
             full_name=name,
-            gender='M'
+            gender=random_gender
         )
         return runner
