@@ -16,7 +16,8 @@ class Command(BaseCommand):
             help="Number of runners to create"
         )
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
+        count = options['count']
         # For season 2025/2026, enter 2526
         seasons = ['2324', '2425', '2526']
 
@@ -24,6 +25,15 @@ class Command(BaseCommand):
             self.create_seasons(season)
 
         self.create_races()
+
+        runner_counter = 1
+        for i in range(count):
+            print(f"Printing runner number {i+1}")
+            self.create_runners()
+            runner_counter += 1
+
+        total_runners = runner_counter - 1
+        print(f"Successfully created {total_runners} runners")
 
     def create_seasons(self, season):
         season_object = Season.objects.update_or_create(
@@ -43,3 +53,10 @@ class Command(BaseCommand):
                     season=season
                 )
         return race_object
+
+    def create_runners(self, *args, **kwargs):
+        runner = Runner.objects.update_or_create(
+            full_name='Lukasz Pudlo',
+            gender='M'
+        )
+        return runner
