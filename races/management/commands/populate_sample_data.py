@@ -69,8 +69,9 @@ class Command(BaseCommand):
 
         races = Race.objects.all()
         runners = Runner.objects.all()
-        for runner in runners:
-            self.create_results(races[0], runner)
+        for race in races:
+            for runner in runners:
+                self.create_results(race, runner)
 
     def create_seasons(self, season):
         season_object = Season.objects.update_or_create(
