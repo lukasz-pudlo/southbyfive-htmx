@@ -110,7 +110,6 @@ class Command(BaseCommand):
         result = Result.objects.update_or_create(
             race=race_object,
             runner=runner,
-            position=1,
             time=time
         )
         return result
