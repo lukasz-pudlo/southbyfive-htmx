@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from faker import Faker
 
 from races.models import Season, Race, Runner, Result
+fake = Faker()
 
 
 class Command(BaseCommand):
@@ -30,7 +31,8 @@ class Command(BaseCommand):
         runner_counter = 1
         for i in range(count):
             print(f"Printing runner number {i+1}")
-            self.create_runners()
+            name = fake.name()
+            self.create_runners(name)
             runner_counter += 1
 
         total_runners = runner_counter - 1
@@ -55,9 +57,10 @@ class Command(BaseCommand):
                 )
         return race_object
 
-    def create_runners(self, *args, **kwargs):
+    def create_runners(self, name):
+        print(f"Creating a runner with fake name: {name}")
         runner = Runner.objects.update_or_create(
-            full_name='Lukasz Pudlo',
+            full_name=name,
             gender='M'
         )
         return runner
