@@ -1,6 +1,7 @@
 from django.core.management import BaseCommand
 import random
 from datetime import date, timedelta
+from faker import Faker
 
 from races.models import Season, Race, Runner, Result
 
