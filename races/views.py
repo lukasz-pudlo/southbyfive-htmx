@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+
 
 from .models import Season, Race, Runner, Result
 
@@ -44,5 +46,6 @@ def race_detail(request, slug):
     return render(request, 'race_detail.html', context)
 
 
+@login_required
 def upload_race(request):
     return render(request, 'upload.html')
