@@ -5,7 +5,9 @@
   <div class="">
     <a href="{% url 'all-races' %}" class="btn btn-ghost text-xl">Races</a>
   </div>
+  {% if request.user.is_authenticated %}
   <div class="">
     <a href="{% url 'upload' %}" class="btn btn-ghost text-xl">Admin</a>
   </div>
+  {% endif %}
 </div>
