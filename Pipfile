@@ -9,6 +9,7 @@ gunicorn = "*"
 psycopg2-binary = "*"
 django-tailwind = {version = "*", extras = ["reload"]}
 faker = "*"
+pandas = "*"
 
 [dev-packages]
 
