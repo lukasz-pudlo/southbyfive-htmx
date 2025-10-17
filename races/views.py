@@ -22,9 +22,21 @@ def races(request, season):
     races = Race.objects.filter(season=season)
 
     context = {
-        'races': races
+        'races': races,
+        'season': season
     }
-    return render(request, 'races.html', context)
+
+    if request.method == "GET":
+        return render(request, 'races.html', context)
+    if request.method == "POST":
+        form = UploadRaceForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_race_file(request.FILES["file"])
+            return redirect('races', season=season.season)
+        else:
+            logger.debug(f"Form validation failed: {form.errors}")
+            context["form"] = form
+            return render(request, 'races.html', context)
 
 
 def all_races(request):
@@ -47,17 +59,3 @@ def race_detail(request, slug):
     }
 
     return render(request, 'race_detail.html', context)
-
-
-@login_required
-def upload_race(request):
-    if request.method == "GET":
-        return render(request, 'upload.html')
-    if request.method == "POST":
-        form = UploadRaceForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_race_file(request.FILES["file"])
-            return redirect('upload')
-        else:
-            logger.debug(f"Form validation failed: {form.errors}")
-            return render(request, 'upload.html', {'form': form})
