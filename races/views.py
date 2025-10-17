@@ -1,9 +1,11 @@
-from django.shortcuts import get_object_or_404, render
+from .models import Season, Race, Runner, Result
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import UploadRaceForm
 from .utils import handle_race_file
 
-from .models import Season, Race, Runner, Result
+import logging
+logger = logging.getLogger(__name__)
 
 
 def seasons(request):
@@ -49,15 +51,13 @@ def race_detail(request, slug):
 
 @login_required
 def upload_race(request):
-    return render(request, 'upload.html')
-
-
-def upload_race_file(request):
+    if request.method == "GET":
+        return render(request, 'upload.html')
     if request.method == "POST":
         form = UploadRaceForm(request.POST, request.FILES)
         if form.is_valid():
             handle_race_file(request.FILES["file"])
-            # return something here, potentially
-    else:
-        form = UploadRaceForm()
-    return render(request, 'upload_partial.html', {"form": form})
+            return redirect('upload')
+        else:
+            logger.debug(f"Form validation failed: {form.errors}")
+            return render(request, 'upload.html', {'form': form})
