@@ -21,13 +21,6 @@ def races(request, season):
     season = get_object_or_404(Season, season=season)
     races = Race.objects.filter(season=season)
 
-    context = {
-        'races': races,
-        'season': season
-    }
-
-    if request.method == "GET":
-        return render(request, 'races.html', context)
     if request.method == "POST":
         form = UploadRaceForm(request.POST, request.FILES)
         if form.is_valid():
@@ -36,8 +29,16 @@ def races(request, season):
             return redirect('races', season=season.season)
         else:
             logger.debug(f"Form validation failed: {form.errors}")
-            context["form"] = form
-            return render(request, 'races.html', context)
+    else:
+        form = UploadRaceForm()
+
+    context = {
+        'races': races,
+        'season': season,
+        'form': form
+    }
+
+    return render(request, 'races.html', context)
 
 
 def all_races(request):
