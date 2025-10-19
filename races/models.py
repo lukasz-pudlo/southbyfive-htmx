@@ -48,12 +48,38 @@ class Runner(models.Model):
         "F": "Female",
         "NB": "Non-Binary",
     }
+    CATEGORY_CHOICES = {
+        "MS": "Male Senior",
+        "FS": "Female Senior",
+        "NBS": "Non-Binary Senior",
+        "M40": "Male 40",
+        "F40": "Female 40",
+        "NB40": "Non-Binary 40",
+        "M50": "Male 50",
+        "F50": "Female 50",
+        "NB50": "Non-Binary 50",
+        "M60": "Male 60",
+        "F60": "Female 60",
+        "NB60": "Non-Binary 60",
+        "M70": "Male 70",
+        "F70": "Female 70",
+        "NB70": "Non-Binary 70",
+        "M80": "Male 80",
+        "F80": "Female 80",
+        "NB80": "Non-Binary 80",
+        "M90": "Male 90",
+        "F90": "Female 90",
+        "NB90": "Non-Binary 90",
+        "M100": "Male 100",
+        "F100": "Female 100",
+        "NB100": "Non-Binary 100",
+    }
     gender = models.CharField(
         max_length=2,
         choices=GENDER_CHOICES,
     )
     participant_number = models.CharField(max_length=5)
-    category = models.CharField(max_length=4)
+    category = models.CharField(max_length=5, choices=CATEGORY_CHOICES)
     club = models.CharField(max_length=256, blank=True)
 
     @property
