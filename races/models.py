@@ -52,6 +52,9 @@ class Runner(models.Model):
         max_length=2,
         choices=GENDER_CHOICES,
     )
+    participant_number = models.CharField(max_length=5)
+    category = models.CharField(max_length=3)
+    club = models.CharField(max_length=256, blank=True)
 
     @property
     def full_name(self):
