@@ -5,24 +5,15 @@ from races.models import Season, Race, Runner, Result
 logger = logging.getLogger(__name__)
 
 
-def add_runners(df):
+def add_runners(df, runners):
     """
-    Takes a Pandas dataframe as an argument and creates a Runner object
+    Takes a Pandas dataframe and a list containing tuples 
+    with runner data to create a Runner object
     """
     gender_list = list(Runner.GENDER_CHOICES.keys())
 
     # Create or update runners
-    file_runner_rows = []
-    for row in df.itertuples():
-        file_runner_rows.append(row)
-        # logger.debug(f"Index: {row.Index}, Time: {row.Time}")
-    # logger.debug(f"file_runner_rows: {file_runner_rows}")
-    logger.debug(
-        f"One entry from file_runner_rows: {file_runner_rows[0]}")
-    logger.debug(
-        f"One entry from file_runner_rows: {file_runner_rows[0].FirstName}")
-
-    for runner in file_runner_rows:
+    for runner in runners:
         gender = list(runner.Category)[0]
         logger.debug(f"gender first letter: {gender}")
         if gender == "N":
@@ -35,6 +26,10 @@ def add_runners(df):
             category=runner.Category,
             club=runner.Club
         )
+
+
+def add_results(race, runner):
+    pass
 
 
 def handle_race_file(file, season):
@@ -53,6 +48,16 @@ def handle_race_file(file, season):
     # Retrieve the race corresponding to the file
     race_name = str(file).split('.')[0]
     logger.debug(f"Variable race_name: {race_name}")
+
+    file_runner_rows = []
+    for row in df.itertuples():
+        file_runner_rows.append(row)
+        # logger.debug(f"Index: {row.Index}, Time: {row.Time}")
+    # logger.debug(f"file_runner_rows: {file_runner_rows}")
+    logger.debug(
+        f"One entry from file_runner_rows: {file_runner_rows[0]}")
+    logger.debug(
+        f"One entry from file_runner_rows: {file_runner_rows[0].FirstName}")
 
     # Always delete all races, and results in the current season when uploading.
     # Uploads will always have to start with King's Park.
@@ -87,25 +92,25 @@ def handle_race_file(file, season):
             season=season
         )
 
-        add_runners(df)
+        add_runners(df, file_runner_rows)
+    else:
+        park = ""
+        match race_name:
+            case "linn":
+                park = "LP"
+            case "rouken":
+                park = "RG"
+            case "pollok":
+                park = "PP"
+            case "bellahouston":
+                park = "BP"
+            case "queens":
+                park = "QP"
+        race_object = Race.objects.update_or_create(
+            park=park,
+            season=season
+        )
 
-    park = ""
-    match race_name:
-        case "linn":
-            park = "LP"
-        case "rouken":
-            park = "RG"
-        case "pollok":
-            park = "PP"
-        case "bellahouston":
-            park = "BP"
-        case "queens":
-            park = "QP"
-    race_object = Race.objects.update_or_create(
-        park=park,
-        season=season
-    )
-
-    add_runners(df)
+        add_runners(df, file_runner_rows)
 
     # Create results
