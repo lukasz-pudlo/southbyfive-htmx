@@ -5,6 +5,38 @@ from races.models import Season, Race, Runner, Result
 logger = logging.getLogger(__name__)
 
 
+def add_runners(df):
+    """
+    Takes a Pandas dataframe as an argument and creates a Runner object
+    """
+    gender_list = list(Runner.GENDER_CHOICES.keys())
+
+    # Create or update runners
+    file_runner_rows = []
+    for row in df.itertuples():
+        file_runner_rows.append(row)
+        # logger.debug(f"Index: {row.Index}, Time: {row.Time}")
+    # logger.debug(f"file_runner_rows: {file_runner_rows}")
+    logger.debug(
+        f"One entry from file_runner_rows: {file_runner_rows[0]}")
+    logger.debug(
+        f"One entry from file_runner_rows: {file_runner_rows[0].FirstName}")
+
+    for runner in file_runner_rows:
+        gender = list(runner.Category)[0]
+        logger.debug(f"gender first letter: {gender}")
+        if gender == "N":
+            gender = "NB"
+        Runner.objects.update_or_create(
+            first_name=runner.FirstName,
+            last_name=runner.LastName,
+            gender=gender,
+            participant_number=runner.ParticipantNumber,
+            category=runner.Category,
+            club=runner.Club
+        )
+
+
 def handle_race_file(file, season):
     logger.debug(f"Uploaded the following file: {file}")
     df = pd.read_excel(file)
@@ -55,31 +87,6 @@ def handle_race_file(file, season):
             season=season
         )
 
-        gender_list = list(Runner.GENDER_CHOICES.keys())
-
-        # Create or update runners
-        file_runner_rows = []
-        for row in df.itertuples():
-            file_runner_rows.append(row)
-            # logger.debug(f"Index: {row.Index}, Time: {row.Time}")
-        # logger.debug(f"file_runner_rows: {file_runner_rows}")
-        logger.debug(
-            f"One entry from file_runner_rows: {file_runner_rows[0]}")
-        logger.debug(
-            f"One entry from file_runner_rows: {file_runner_rows[0].FirstName}")
-
-        for runner in file_runner_rows:
-            gender = list(runner.Category)[0]
-            logger.debug(f"gender first letter: {gender}")
-            if gender == "N":
-                gender = "NB"
-            Runner.objects.update_or_create(
-                first_name=runner.FirstName,
-                last_name=runner.LastName,
-                gender=gender,
-                participant_number=runner.ParticipantNumber,
-                category=runner.Category,
-                club=runner.Club
-            )
+        add_runners(df)
 
         # Create results
