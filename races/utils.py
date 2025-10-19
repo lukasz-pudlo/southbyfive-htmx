@@ -10,6 +10,7 @@ def add_runners(df, runners):
     Takes a Pandas dataframe and a list containing tuples 
     with runner data to create a Runner object
     """
+    logger.debug(f"runners at the start of add_runners(): {runners}")
     gender_list = list(Runner.GENDER_CHOICES.keys())
 
     # Create or update runners
@@ -18,7 +19,7 @@ def add_runners(df, runners):
         logger.debug(f"gender first letter: {gender}")
         if gender == "N":
             gender = "NB"
-        Runner.objects.update_or_create(
+        runner_object, created = Runner.objects.update_or_create(
             first_name=runner.FirstName,
             last_name=runner.LastName,
             gender=gender,
@@ -26,10 +27,30 @@ def add_runners(df, runners):
             category=runner.Category,
             club=runner.Club
         )
+        # runners["pk"] = runner_object.pk
+    logger.debug(f"runners after add_runners(): {runners}")
+    return runners
 
 
-def add_results(race, runner):
-    pass
+def add_results(runners, race_object):
+    logger.debug(f"race_object in add_results(): {race_object}")
+    logger.debug(f"pk of race_object: {race_object.pk}")
+    try:
+        results = Result.objects.get(race=race_object)
+    except Result.DoesNotExist:
+        results = None
+    if results:
+        logger.debug(f"results in add_results(): {results}")
+        logger.debug(f"Deleting results from race {race_object}")
+        results.delete()
+    # for runner in runners:
+    #     logger.debug(f"Runner in add_results(): {runner}")
+        # Runner.objects.get(pk=)
+        # Result.objects.create(
+        #     race=race_object,
+        #     runner=runner,
+        #     time=runner.Time
+        # )
 
 
 def handle_race_file(file, season):
@@ -93,6 +114,11 @@ def handle_race_file(file, season):
         )
 
         add_runners(df, file_runner_rows)
+
+        # Create results
+        logger.debug(
+            f"race_object before calling add_results(): {race_object}")
+        add_results(file_runner_rows, race_object)
     else:
         park = ""
         match race_name:
@@ -106,11 +132,14 @@ def handle_race_file(file, season):
                 park = "BP"
             case "queens":
                 park = "QP"
-        race_object = Race.objects.update_or_create(
+        race_object, created = Race.objects.update_or_create(
             park=park,
             season=season
         )
 
         add_runners(df, file_runner_rows)
 
-    # Create results
+        # Create results
+        logger.debug(
+            f"race_object before calling add_results(): {race_object}")
+        add_results(file_runner_rows, race_object)
