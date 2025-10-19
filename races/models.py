@@ -41,9 +41,8 @@ class Race(models.Model):
 
 
 class Runner(models.Model):
-    full_name = models.CharField(
-        max_length=256,
-    )
+    first_name = models.CharField(max_length=256)
+    last_name = models.CharField(max_length=256)
     GENDER_CHOICES = {
         "M": "Male",
         "F": "Female",
@@ -53,6 +52,10 @@ class Runner(models.Model):
         max_length=2,
         choices=GENDER_CHOICES,
     )
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     def __str__(self):
         return self.full_name
