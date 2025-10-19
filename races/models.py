@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.core.validators import FileExtensionValidator
 
 
 class Season(models.Model):
@@ -97,3 +98,8 @@ class Result(models.Model):
 
     def __str__(self):
         return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
+
+
+class RaceFile(models.Model):
+    excel_file = models.FileField(null=True, blank=True, validators=[
+        FileExtensionValidator(['xlsx'])])

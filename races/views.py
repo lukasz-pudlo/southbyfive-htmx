@@ -32,7 +32,7 @@ def races(request, season):
         form = UploadRaceForm(request.POST, request.FILES)
         if form.is_valid():
             # In order to handle the Excel file with race data, the function needs to know the season
-            handle_race_file(request.FILES["file"], season)
+            handle_race_file(form.cleaned_data["excel_file"], season)
             return redirect('races', season=season.season)
         else:
             logger.debug(f"Form validation failed: {form.errors}")
