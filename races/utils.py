@@ -89,4 +89,23 @@ def handle_race_file(file, season):
 
         add_runners(df)
 
-        # Create results
+    park = ""
+    match race_name:
+        case "linn":
+            park = "LP"
+        case "rouken":
+            park = "RG"
+        case "pollok":
+            park = "PP"
+        case "bellahouston":
+            park = "BP"
+        case "queens":
+            park = "QP"
+    race_object = Race.objects.update_or_create(
+        park=park,
+        season=season
+    )
+
+    add_runners(df)
+
+    # Create results
