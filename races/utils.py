@@ -13,6 +13,8 @@ def add_runners(df, runners):
     logger.debug(f"runners at the start of add_runners(): {runners}")
     gender_list = list(Runner.GENDER_CHOICES.keys())
 
+    runner_objects = []
+
     # Create or update runners
     for runner in runners:
         gender = list(runner.Category)[0]
@@ -27,14 +29,19 @@ def add_runners(df, runners):
             category=runner.Category,
             club=runner.Club
         )
-        # runners["pk"] = runner_object.pk
+        # Pass time result to runner_object so that it's accessible in add_results()
+        runner_objects.append({
+            'runner_object': runner_object,
+            'time': runner.Time
+        })
     logger.debug(f"runners after add_runners(): {runners}")
-    return runners
+    return runner_objects
 
 
-def add_results(runners, race_object):
+def add_results(runner_objects, race_object, file_runner_rows):
     logger.debug(f"race_object in add_results(): {race_object}")
     logger.debug(f"pk of race_object: {race_object.pk}")
+    logger.debug(f"file_runner_rows in add_results(): {file_runner_rows}")
     try:
         results = Result.objects.get(race=race_object)
     except Result.DoesNotExist:
@@ -43,14 +50,19 @@ def add_results(runners, race_object):
         logger.debug(f"results in add_results(): {results}")
         logger.debug(f"Deleting results from race {race_object}")
         results.delete()
-    # for runner in runners:
-    #     logger.debug(f"Runner in add_results(): {runner}")
-        # Runner.objects.get(pk=)
-        # Result.objects.create(
-        #     race=race_object,
-        #     runner=runner,
-        #     time=runner.Time
-        # )
+
+    for runner in runner_objects:
+        logger.debug(f"Runner in add_results(): {runner}")
+        runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
+        logger.debug(f"runner_object in add_results(): {runner_object}")
+        time = runner["time"]
+        if time == "DNF":
+            time = None
+        Result.objects.create(
+            race=race_object,
+            runner=runner_object,
+            time=time
+        )
 
 
 def handle_race_file(file, season):
@@ -74,7 +86,7 @@ def handle_race_file(file, season):
     for row in df.itertuples():
         file_runner_rows.append(row)
         # logger.debug(f"Index: {row.Index}, Time: {row.Time}")
-    # logger.debug(f"file_runner_rows: {file_runner_rows}")
+    logger.debug(f"file_runner_rows: {file_runner_rows}")
     logger.debug(
         f"One entry from file_runner_rows: {file_runner_rows[0]}")
     logger.debug(
@@ -113,12 +125,12 @@ def handle_race_file(file, season):
             season=season
         )
 
-        add_runners(df, file_runner_rows)
+        runner_objects = add_runners(df, file_runner_rows)
 
         # Create results
         logger.debug(
             f"race_object before calling add_results(): {race_object}")
-        add_results(file_runner_rows, race_object)
+        add_results(runner_objects, race_object, file_runner_rows)
     else:
         park = ""
         match race_name:
@@ -137,9 +149,9 @@ def handle_race_file(file, season):
             season=season
         )
 
-        add_runners(df, file_runner_rows)
+        runner_objects = add_runners(df, file_runner_rows)
 
         # Create results
         logger.debug(
             f"race_object before calling add_results(): {race_object}")
-        add_results(file_runner_rows, race_object)
+        add_results(runner_objects, race_object, file_runner_rows)
