@@ -60,8 +60,9 @@ class Command(BaseCommand):
         runner_counter = 1
         for i in range(count):
             print(f"Printing runner number {i+1}")
-            name = fake.name()
-            self.create_runners(name)
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            self.create_runners(first_name, last_name)
             runner_counter += 1
 
         total_runners = runner_counter - 1
@@ -92,13 +93,14 @@ class Command(BaseCommand):
                 )
         return race_object
 
-    def create_runners(self, name):
+    def create_runners(self, first_name, last_name):
         gender_list = list(Runner.GENDER_CHOICES.keys())
         random_gender = random.choice(gender_list)
         print(
-            f"Creating a runner with fake name {name} and gender {random_gender}")
+            f"Creating a runner with fake first name {first_name}, last name {last_name}, and gender {random_gender}")
         runner = Runner.objects.update_or_create(
-            full_name=name,
+            first_name=first_name,
+            last_name=last_name,
             gender=random_gender
         )
         return runner
