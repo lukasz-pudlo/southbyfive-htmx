@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 from races.models import Season, Race, Runner, Result
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,15 @@ def add_results(runner_objects, race_object, file_runner_rows):
         time = runner["time"]
         if time == "DNF":
             time = None
+        else:
+            hours, minutes, seconds = map(str, time.split(":"))
+
+            milliseconds = "0000"
+            if len(seconds) > 2:
+                seconds, milliseconds = map(str, seconds.split("."))
+            time = timedelta(hours=int(hours), minutes=int(minutes),
+                             seconds=int(seconds), milliseconds=int(milliseconds))
+
         Result.objects.create(
             race=race_object,
             runner=runner_object,
