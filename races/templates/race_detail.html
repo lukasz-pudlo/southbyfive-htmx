@@ -11,6 +11,9 @@
     <thead>
       <tr>
         <th>Runner</th>
+        <th>Number</th>
+        <th>Category</th>
+        <th>Club</th>
         <th>Time</th>
       </tr>
     </thead>
@@ -18,6 +21,9 @@
         {% for result in results %}
         <tr>
             <th>{{ result.runner }}</th>
+            <th>{{ result.runner.participant_number }}</th>
+            <th>{{ result.runner.category }}</th>
+            <td>{{ result.runner.club }}</td>
             <td>{{ result.time }}</td>
         </tr>
         {% endfor %}
