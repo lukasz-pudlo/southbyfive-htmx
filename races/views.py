@@ -53,7 +53,7 @@ def all_races(request):
 
 def race_detail(request, slug):
     race = get_object_or_404(Race, slug=slug)
-    results = Result.objects.filter(race_id=race.id)
+    results = Result.objects.filter(race_id=race.id).order_by('time')
 
     context = {
         'race': race,
