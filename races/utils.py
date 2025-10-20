@@ -61,11 +61,20 @@ def add_results(runner_objects, race_object, file_runner_rows):
         if time == "DNF":
             time = None
         else:
-            hours, minutes, seconds = map(str, time.split(":"))
+            # hours, minutes, seconds = map(str, time.split(":"))
+            time_elements = time.split(":")
+            hours = time_elements[0]
+            minutes = time_elements[1]
+            seconds = 0
+            milliseconds = 0
 
-            milliseconds = "0000"
-            if len(seconds) > 2:
-                seconds, milliseconds = map(str, seconds.split("."))
+            if len(time_elements[2]) > 2:
+                seconds_milliseconds = time_elements[2].split(' ')
+                seconds = seconds_milliseconds[0]
+                milliseconds = seconds_milliseconds[1]
+            else:
+                seconds = time_elements[2]
+
             time = timedelta(hours=int(hours), minutes=int(minutes),
                              seconds=int(seconds), milliseconds=int(milliseconds))
 
