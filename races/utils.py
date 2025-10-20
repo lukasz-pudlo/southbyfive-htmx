@@ -153,3 +153,28 @@ def handle_race_file(file, season):
         logger.debug(
             f"race_object before calling add_results(): {race_object}")
         add_results(runner_objects, race_object, file_runner_rows)
+
+        """
+        Now, the classification. The rules are as follows:
+        - There are six races. 
+        - Participation in any five of them is required to be included
+        in the classification. 
+        - Let n be the number of races, if after the second race a runner 
+        has taken part in fewer than n - 1 races (0 being for runners
+        who join the series after the second race), they are excluded
+        from the classification. 
+        - After each race, a runner receives points. The number of points
+        corresponds to the runner's position. 
+        - For runners who are included in the classification, 
+        points will change after each race. Not only because new points
+        for the new race will be added, but also because points for previous
+        races will need to be recalculated. 
+        - In terms of how it could work in practice, I think it might be
+        a good idea to create a copy of the results for each race 
+        after the next race so that the runners that are no longer included
+        in the classification are removed from the previous races and the
+        points can be recalculated. 
+        - Perhaps, there should be an immutable version of race result object
+        that is used for race results and another mutable version that can be
+        used for recalculation purposes. 
+        """
