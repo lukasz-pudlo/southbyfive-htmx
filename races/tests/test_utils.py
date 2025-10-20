@@ -31,16 +31,18 @@ class RaceResultListView(TestCase):
         results = Result.objects.filter(race=race.id)
 
         next_result = None
-        l = len(results)
 
         for index, result in enumerate(results):
-            if index < (l - 1):
+            if index < len(results) - 1:
                 next_result = results[index + 1]
+            else:
+                next_result = None
 
             logger.debug(
                 f"This result is {result} and next result is {next_result}")
             this_time = result.time
-            next_time = next_result.time
+            if next_result is not None:
+                next_time = next_result.time
 
             if next_result is not None:
                 self.assertGreater(
