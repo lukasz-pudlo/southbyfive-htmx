@@ -1,8 +1,11 @@
+import logging
 from django.test import TestCase
 from django.urls import reverse
 from races.models import Season, Race, Runner, Result
 from races.utils import handle_race_file
 from southbyfivehtmx.settings import BASE_DIR
+
+logger = logging.getLogger(__name__)
 
 
 class RaceResultListView(TestCase):
