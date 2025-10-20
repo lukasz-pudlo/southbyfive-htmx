@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load time_filters %}
 
 {% block content %}
 <div class="container mx-auto p-4">
@@ -24,7 +25,7 @@
             <th>{{ result.runner.participant_number }}</th>
             <th>{{ result.runner.category }}</th>
             <td>{{ result.runner.club }}</td>
-            <td>{{ result.time }}</td>
+            <td>{{ result.time|format_race_time }}</td>
         </tr>
         {% endfor %}
     </tbody>
