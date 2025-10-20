@@ -154,3 +154,6 @@ media/
 # Personal notes
 DEV_NOTES.md
 logs.txt
+
+# Test resources
+races/tests/resources
