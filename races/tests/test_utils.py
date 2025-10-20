@@ -26,3 +26,23 @@ class RaceResultListView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'race_detail.html')
         self.assertContains(response, 'kp-2526')
+
+    def test_results_in_ascending_time_order(self):
+        race = Race.objects.filter(slug='kp-2526').first()
+        results = Result.objects.filter(race=race.id)
+
+        next_result = None
+        l = len(results)
+
+        for index, result in enumerate(results):
+            if index < (l - 1):
+                next_result = results[index + 1]
+
+            logger.debug(
+                f"This result is {result} and next result is {next_result}")
+            this_time = result.time
+            next_time = next_result.time
+
+            if next_result is not None:
+                self.assertGreater(
+                    next_time, this_time, 'Next result in the list is not greater than the previous result')
