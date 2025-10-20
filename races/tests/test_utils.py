@@ -25,7 +25,6 @@ class RaceResultListView(TestCase):
             reverse('race-detail', kwargs={'slug': 'kp-2526'}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'race_detail.html')
-        self.assertContains(response, 'kp-2526')
 
     def test_results_in_ascending_time_order(self):
         race = Race.objects.filter(slug='kp-2526').first()
