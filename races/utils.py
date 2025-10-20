@@ -93,7 +93,13 @@ def handle_race_file(file, season):
     df = df.rename(columns={"First Name": "FirstName", "Last Name": "LastName",
                             "Participant Number": "ParticipantNumber"})
     logger.debug(f"The file {file} has the following contents: \n {df}")
-    race_name = Path(file).stem
+    # Handle both file paths (for tests) and uploaded file objects (for actual uploads)
+    if hasattr(file, 'name'):
+        # This is an uploaded file object
+        race_name = Path(file.name).stem
+    else:
+        # This is a file path string
+        race_name = Path(file).stem
     logger.debug(f"Variable race_name: {race_name}")
 
     file_runner_rows = []
