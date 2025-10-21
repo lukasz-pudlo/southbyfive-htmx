@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from races.models import Season, Race, Runner, Result
+from races.models import Season, Race, Runner, Result, Classification, ClassificationResult
 from datetime import timedelta
 from pathlib import Path
 
@@ -83,6 +83,13 @@ def add_results(runner_objects, race_object, file_runner_rows):
             runner=runner_object,
             time=time
         )
+
+
+def add_classification(season, race_object):
+    Classification.objects.create(
+        race=race_object,
+        season=season
+    )
 
 
 def handle_race_file(file, season):
@@ -194,3 +201,5 @@ def handle_race_file(file, season):
         that is used for race results and another mutable version that can be
         used for recalculation purposes. 
         """
+
+    add_classification(season, race_object)
