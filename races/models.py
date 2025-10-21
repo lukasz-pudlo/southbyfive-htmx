@@ -103,6 +103,19 @@ class Result(models.Model):
         return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
 
 
+class Classification(models.Model):
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+
+
+class ClassificationResult(models.Model):
+    classification = models.ForeignKey(
+        Classification, on_delete=models.CASCADE)
+    runner = models.ForeignKey(Runner, on_delete=models.CASCADE)
+    general_points = models.IntegerField(null=True)
+    gender_points = models.IntegerField(null=True)
+    category_points = models.IntegerField(null=True)
+
+
 class RaceFile(models.Model):
     excel_file = models.FileField(null=True, blank=True, validators=[
         FileExtensionValidator(['xlsx'])])
