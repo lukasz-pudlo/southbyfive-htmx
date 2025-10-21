@@ -115,6 +115,11 @@ class RecalculatedResult(models.Model):
 
 class Classification(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.slug = f"class-{self.race.park.lower()}-{self.season.season}"
+        super().save(*args, **kwargs)
 
 
 class ClassificationResult(models.Model):
