@@ -86,10 +86,20 @@ def add_results(runner_objects, race_object, file_runner_rows):
 
 
 def add_classification(season, race_object):
-    Classification.objects.create(
+    classification = Classification.objects.create(
         race=race_object,
         season=season
     )
+    return classification
+
+
+def add_classification_results(classification_object, runner_objects):
+    for runner in runner_objects:
+        runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
+        ClassificationResult.objects.create(
+            classification=classification_object,
+            runner=runner_object
+        )
 
 
 def handle_race_file(file, season):
@@ -202,4 +212,6 @@ def handle_race_file(file, season):
         used for recalculation purposes. 
         """
 
-    add_classification(season, race_object)
+    classification_object = add_classification(season, race_object)
+
+    add_classification_results(classification_object, runner_objects)
