@@ -53,6 +53,7 @@ def add_results(runner_objects, race_object, file_runner_rows):
         logger.debug(f"Deleting results from race {race_object}")
         results.delete()
 
+    result_objects = []
     for runner in runner_objects:
         logger.debug(f"Runner in add_results(): {runner}")
         runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
@@ -78,11 +79,13 @@ def add_results(runner_objects, race_object, file_runner_rows):
             time = timedelta(hours=int(hours), minutes=int(minutes),
                              seconds=int(seconds), milliseconds=int(milliseconds))
 
-        Result.objects.create(
+        result = Result.objects.create(
             race=race_object,
             runner=runner_object,
             time=time
         )
+        result_objects.append(result)
+    return result_objects
 
 
 def add_classification(season, race_object):
@@ -93,13 +96,28 @@ def add_classification(season, race_object):
     return classification
 
 
-def add_classification_results(classification_object, runner_objects):
-    for runner in runner_objects:
-        runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
-        ClassificationResult.objects.create(
-            classification=classification_object,
-            runner=runner_object
-        )
+def add_classification_results(classification_object, runner_objects, result_objects, race_object):
+    # Go through runner rows
+    # For general points, sort by time and increment iteration
+    results_with_points = []
+    for i in range(len(result_objects)):
+        logger.debug(
+            f"result from result_objects in add_classification_results: {result_objects[i]}")
+        results_with_points.append({
+            'result_object': result_objects[i],
+            'general_points': i+1
+        })
+    logger.debug(
+        f"results_with_points: {results_with_points}")
+
+    # For gender and category points, create a list based on filter
+    # and do the above
+
+    # runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
+    # ClassificationResult.objects.create(
+    #     classification=classification_object,
+    #     runner=runner_object
+    # )
 
 
 def handle_race_file(file, season):
@@ -161,7 +179,8 @@ def handle_race_file(file, season):
         # Create results
         logger.debug(
             f"race_object before calling add_results(): {race_object}")
-        add_results(runner_objects, race_object, file_runner_rows)
+        result_objects = add_results(
+            runner_objects, race_object, file_runner_rows)
     else:
         park = ""
         match race_name:
@@ -185,7 +204,8 @@ def handle_race_file(file, season):
         # Create results
         logger.debug(
             f"race_object before calling add_results(): {race_object}")
-        add_results(runner_objects, race_object, file_runner_rows)
+        result_objects = add_results(
+            runner_objects, race_object, file_runner_rows)
 
         """
         Now, the classification. The rules are as follows:
@@ -214,4 +234,5 @@ def handle_race_file(file, season):
 
     classification_object = add_classification(season, race_object)
 
-    add_classification_results(classification_object, runner_objects)
+    add_classification_results(
+        classification_object, runner_objects, result_objects, race_object)
