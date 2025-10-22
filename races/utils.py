@@ -110,14 +110,46 @@ def add_classification_results(classification_object, runner_objects, result_obj
     logger.debug(
         f"results_with_points: {results_with_points}")
 
-    # For gender and category points, create a list based on filter
-    # and do the above
+    for result in results_with_points:
+        ClassificationResult.objects.create(
+            classification=classification_object,
+            runner=result["result_object"].runner,
+            general_points=result["general_points"]
+        )
 
-    # runner_object = Runner.objects.get(pk=runner["runner_object"].pk)
-    # ClassificationResult.objects.create(
-    #     classification=classification_object,
-    #     runner=runner_object
-    # )
+    add_gender_points(result_objects, gender="M")
+    add_gender_points(result_objects, gender="F")
+    add_gender_points(result_objects, gender="NB")
+
+
+def add_gender_points(result_objects, gender):
+    gendered_results = []
+    for i in range(len(result_objects)):
+        logger.debug(
+            f"result from result_objects in add_classification_results: {result_objects[i]}")
+        if result_objects[i].runner.gender == gender:
+            gendered_results.append({
+                'result_object': result_objects[i]
+            })
+    logger.debug(
+        f"gendered_results: {gendered_results}")
+
+    gendered_results_with_points = []
+    for i in range(len(gendered_results)):
+        logger.debug(
+            f"result from gendered_results_with_points in add_gender_points: {gendered_results[i]}")
+        gendered_results_with_points.append({
+            'result_object': gendered_results[i]["result_object"],
+            'gender_points': i+1
+        })
+    logger.debug(
+        f"gendered_results_with_points: {gendered_results_with_points}")
+
+    for result in gendered_results_with_points:
+        classification_result = ClassificationResult.objects.get(
+            runner=result["result_object"].runner)
+        classification_result.gender_points = result["gender_points"]
+        classification_result.save()
 
 
 def handle_race_file(file, season):
