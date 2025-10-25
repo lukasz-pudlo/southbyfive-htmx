@@ -125,10 +125,39 @@ def add_classification_results(classification_object, runner_objects, result_obj
 
 
 def add_category_points(result_objects):
+    # Get the list of category choices
     categories = Runner.category.field.choices
+    # Get the keys of the category choices
     category_values = [c[0] for c in Runner.category.field.choices]
     logger.debug(f"categories in add_category_points: {categories}")
     logger.debug(f"category_values in add_category_points: {category_values}")
+    for category in category_values:
+        category_results = []
+        for i in range(len(result_objects)):
+            logger.debug(
+                f"result from result_objects in add_category_points for category {category}: {result_objects[i]}")
+            if result_objects[i].runner.category == category:
+                category_results.append({
+                    'result_object': result_objects[i]
+                })
+        logger.debug(
+            f"category_results: {category_results}")
+        category_results_with_points = []
+        for i in range(len(category_results)):
+            logger.debug(
+                f"result from category_results_with_points in add_category_points: {category_results[i]}")
+            category_results_with_points.append({
+                'result_object': category_results[i]["result_object"],
+                'category_points': i+1
+            })
+        logger.debug(
+            f"category_results_with_points: {category_results_with_points}")
+
+        for result in category_results_with_points:
+            classification_result = ClassificationResult.objects.get(
+                runner=result["result_object"].runner)
+            classification_result.category_points = result["category_points"]
+            classification_result.save()
 
 
 def add_gender_points(result_objects, gender):
