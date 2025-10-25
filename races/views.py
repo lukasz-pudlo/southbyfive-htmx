@@ -1,4 +1,4 @@
-from .models import Season, Race, Runner, Result
+from .models import Season, Race, Runner, Result, Classification, ClassificationResult
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import UploadRaceForm
@@ -61,3 +61,16 @@ def race_detail(request, slug):
     }
 
     return render(request, 'race_detail.html', context)
+
+
+def classification_detail(request, slug):
+    classification = get_object_or_404(Classification, slug=slug)
+    classification_results = ClassificationResult.objects.filter(
+        classification=classification.id).order_by('general_points')
+
+    context = {
+        'classification': classification,
+        'classification_results': classification_results
+    }
+
+    return render(request, 'classification_detail.html', context)

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load datetime_filters %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-blue-600">{{ classification }}</h1>
+</div>
+
+<div class="container mx-auto p-4 overflow-x-auto">
+  <table class="table table-zebra">
+    <!-- head -->
+    <thead>
+      <tr>
+        <th>Runner</th>
+        <th>Category</th>
+        <th>General Points</th>
+        <th>Gender Points</th>
+        <th>Category Points</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for classification_result in classification_results %}
+        <tr>
+            <th>{{ classification_result.runner }}</th>
+            <th>{{ classification_result.runner.category }}</th>
+            <td>{{ classification_result.general_points }}</td>
+            <td>{{ classification_result.gender_points }}</td>
+            <td>{{ classification_result.category_points }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
