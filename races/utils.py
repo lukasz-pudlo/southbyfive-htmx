@@ -121,6 +121,15 @@ def add_classification_results(classification_object, runner_objects, result_obj
     add_gender_points(result_objects, gender="F")
     add_gender_points(result_objects, gender="NB")
 
+    add_category_points(result_objects)
+
+
+def add_category_points(result_objects):
+    categories = Runner.category.field.choices
+    category_values = [c[0] for c in Runner.category.field.choices]
+    logger.debug(f"categories in add_category_points: {categories}")
+    logger.debug(f"category_values in add_category_points: {category_values}")
+
 
 def add_gender_points(result_objects, gender):
     gendered_results = []
