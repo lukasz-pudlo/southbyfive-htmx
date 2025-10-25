@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load datetime_filters %}
 
 {% block content %}
   <div class="container mx-auto p-4">
@@ -7,7 +8,7 @@
     <div class="container mx-auto p-4">
       <ul>
         {% for season in seasons %}
-          <li class="text-2xl font-medium text-black"><a href="{{season.season}}">{{ season.season }}</a></li>
+          <li class="text-2xl font-medium text-black"><a href="{{season.season}}">{{ season.season|format_season_name }}</a></li>
         {% endfor %}
       </ul>
     </div>
