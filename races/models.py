@@ -103,15 +103,6 @@ class Result(models.Model):
         return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
 
 
-class RecalculatedResult(models.Model):
-    race = models.ForeignKey(Race, on_delete=models.CASCADE)
-    runner = models.ForeignKey(Runner, on_delete=models.CASCADE)
-    time = models.DurationField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
-
-
 class Classification(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE)
     race = models.ForeignKey(Race, on_delete=models.CASCADE)

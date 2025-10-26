@@ -26,14 +26,9 @@ class ClassificationResultAdmin(admin.ModelAdmin):
     pass
 
 
-class RecalculatedResultAdmin(admin.ModelAdmin):
-    pass
-
-
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Race, RaceAdmin)
 admin.site.register(Runner, RunnerAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Classification, ClassificationAdmin)
 admin.site.register(ClassificationResult, ClassificationResultAdmin)
-admin.site.register(RecalculatedResult, RecalculatedResultAdmin)
