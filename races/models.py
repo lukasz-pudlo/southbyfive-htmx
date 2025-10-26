@@ -117,6 +117,9 @@ class Classification(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     slug = models.SlugField(blank=True, null=True)
 
+    def __str__(self):
+        return f"Classification after {self.race}"
+
     def save(self, *args, **kwargs):
         self.slug = f"{self.race.park.lower()}-{self.season.season}"
         super().save(*args, **kwargs)
