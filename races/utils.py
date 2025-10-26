@@ -97,8 +97,6 @@ def add_classification(season, race_object):
 
 
 def add_classification_results(classification_object, runner_objects, result_objects, race_object):
-    # Go through runner rows
-    # For general points, sort by time and increment iteration
     results_with_points = []
     for i in range(len(result_objects)):
         logger.debug(
