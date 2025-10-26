@@ -3,6 +3,7 @@ import pandas as pd
 from races.models import RaceFile, Season, Race, Runner, Result, Classification, ClassificationResult
 from datetime import timedelta
 from pathlib import Path
+from django.db.models import Count, F
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +112,23 @@ def add_classification_results(classification_object, runner_objects, result_obj
         linn_results = pd.read_json(race_file_objects[1].contents)
         logger.debug(f"kings_results contents: {kings_results}")
         logger.debug(f"linn_results contents: {linn_results}")
+        add_general_points(result_objects, classification_object)
+        add_gender_points(result_objects, classification_object, gender="M")
+        add_gender_points(result_objects, classification_object, gender="F")
+        add_gender_points(result_objects, classification_object, gender="NB")
+        add_category_points(result_objects, classification_object)
+        runners = Runner.objects.all()
+        for runner in runners:
+            classification_results = ClassificationResult.objects.filter(
+                runner=runner)
+            if len(classification_results) == 2:
+                kings_general_points = classification_results[0].general_points
+                linn_general_points = classification_results[1].general_points
+                total_general_points = kings_general_points + linn_general_points
+                logger.debug(
+                    f"runner {runner} had {kings_general_points} general points in King's Park")
+                classification_results[1].general_points = total_general_points
+                classification_results[1].save()
 
 
 def add_general_points(result_objects, classification_object):
