@@ -97,6 +97,23 @@ def add_classification(season, race_object):
 
 
 def add_classification_results(classification_object, runner_objects, result_objects, race_object):
+    race_file_objects = RaceFile.objects.all()
+    if len(race_file_objects) == 1:
+        add_general_points(result_objects, classification_object)
+        add_gender_points(result_objects, classification_object, gender="M")
+        add_gender_points(result_objects, classification_object, gender="F")
+        add_gender_points(result_objects, classification_object, gender="NB")
+        add_category_points(result_objects, classification_object)
+    elif len(race_file_objects) == 2:
+        logger.debug(
+            f"race_file_objects in add_classification_results: {race_file_objects}")
+        kings_results = pd.read_json(race_file_objects[0].contents)
+        linn_results = pd.read_json(race_file_objects[1].contents)
+        logger.debug(f"kings_results contents: {kings_results}")
+        logger.debug(f"linn_results contents: {linn_results}")
+
+
+def add_general_points(result_objects, classification_object):
     results_with_points = []
     for i in range(len(result_objects)):
         logger.debug(
@@ -114,12 +131,6 @@ def add_classification_results(classification_object, runner_objects, result_obj
             runner=result["result_object"].runner,
             general_points=result["general_points"]
         )
-
-    add_gender_points(result_objects, classification_object, gender="M")
-    add_gender_points(result_objects, classification_object, gender="F")
-    add_gender_points(result_objects, classification_object, gender="NB")
-
-    add_category_points(result_objects, classification_object)
 
 
 def add_category_points(result_objects, classification_object):
