@@ -117,14 +117,14 @@ def add_classification_results(classification_object, runner_objects, result_obj
             general_points=result["general_points"]
         )
 
-    add_gender_points(result_objects, gender="M")
-    add_gender_points(result_objects, gender="F")
-    add_gender_points(result_objects, gender="NB")
+    add_gender_points(result_objects, classification_object, gender="M")
+    add_gender_points(result_objects, classification_object, gender="F")
+    add_gender_points(result_objects, classification_object, gender="NB")
 
-    add_category_points(result_objects)
+    add_category_points(result_objects, classification_object)
 
 
-def add_category_points(result_objects):
+def add_category_points(result_objects, classification_object):
     # Get the list of category choices
     categories = Runner.category.field.choices
     # Get the keys of the category choices
@@ -155,12 +155,12 @@ def add_category_points(result_objects):
 
         for result in category_results_with_points:
             classification_result = ClassificationResult.objects.get(
-                runner=result["result_object"].runner)
+                runner=result["result_object"].runner, classification=classification_object)
             classification_result.category_points = result["category_points"]
             classification_result.save()
 
 
-def add_gender_points(result_objects, gender):
+def add_gender_points(result_objects, classification_object, gender):
     gendered_results = []
     for i in range(len(result_objects)):
         logger.debug(
@@ -185,7 +185,7 @@ def add_gender_points(result_objects, gender):
 
     for result in gendered_results_with_points:
         classification_result = ClassificationResult.objects.get(
-            runner=result["result_object"].runner)
+            runner=result["result_object"].runner, classification=classification_object)
         classification_result.gender_points = result["gender_points"]
         classification_result.save()
 
