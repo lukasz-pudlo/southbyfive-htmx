@@ -106,7 +106,7 @@ class Result(models.Model):
 class RecalculatedResult(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     runner = models.ForeignKey(Runner, on_delete=models.CASCADE)
-    points = models.IntegerField(null=True)
+    time = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.runner} - {str(self.time) if {self.time} else 'No time'}"
