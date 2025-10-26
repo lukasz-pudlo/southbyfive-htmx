@@ -128,3 +128,9 @@ class ClassificationResult(models.Model):
 class RaceFile(models.Model):
     excel_file = models.FileField(null=True, blank=True, validators=[
         FileExtensionValidator(['xlsx'])])
+    contents = models.JSONField(blank=True, null=True)
+    race = models.ForeignKey(
+        Race, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.excel_file)

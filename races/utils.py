@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from races.models import Season, Race, Runner, Result, Classification, ClassificationResult
+from races.models import RaceFile, Season, Race, Runner, Result, Classification, ClassificationResult
 from datetime import timedelta
 from pathlib import Path
 
@@ -197,6 +197,9 @@ def handle_race_file(file, season):
     # the columns names will be replace by _{column index}
     df = df.rename(columns={"First Name": "FirstName", "Last Name": "LastName",
                             "Participant Number": "ParticipantNumber"})
+
+    json_df = df.to_json()
+
     logger.debug(f"The file {file} has the following contents: \n {df}")
     # Handle both file paths (for tests) and uploaded file objects (for actual uploads)
     if hasattr(file, 'name'):
@@ -244,6 +247,15 @@ def handle_race_file(file, season):
             season=season
         )
 
+        race_file_objects = RaceFile.objects.all()
+        race_file_objects.delete()
+
+        RaceFile.objects.create(
+            excel_file=file,
+            contents=json_df,
+            race=race_object
+        )
+
         runner_objects = add_runners(df, file_runner_rows)
 
         # Create results
@@ -252,6 +264,10 @@ def handle_race_file(file, season):
         result_objects = add_results(
             runner_objects, race_object, file_runner_rows)
     else:
+        RaceFile.objects.create(
+            excel_file=file,
+            contents=json_df
+        )
         park = ""
         match race_name:
             case "linn":
