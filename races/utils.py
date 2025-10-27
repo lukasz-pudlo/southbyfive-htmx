@@ -3,7 +3,7 @@ import pandas as pd
 from races.models import RaceFile, Season, Race, Runner, Result, Classification, ClassificationResult
 from datetime import timedelta
 from pathlib import Path
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 
 logger = logging.getLogger(__name__)
 
@@ -97,10 +97,10 @@ def add_classification(season, race_object):
     return classification
 
 
-def add_classification_results(classification_object, runner_objects, result_objects, race_object):
+def add_classification_results(classification_object, runner_objects, result_objects, race_object, season):
     race_file_objects = RaceFile.objects.all()
     if len(race_file_objects) == 1:
-        add_general_points(result_objects, classification_object)
+        add_general_points(result_objects, classification_object, save=True)
         add_gender_points(result_objects, classification_object, gender="M")
         add_gender_points(result_objects, classification_object, gender="F")
         add_gender_points(result_objects, classification_object, gender="NB")
@@ -112,7 +112,7 @@ def add_classification_results(classification_object, runner_objects, result_obj
         linn_results = pd.read_json(race_file_objects[1].contents)
         logger.debug(f"kings_results contents: {kings_results}")
         logger.debug(f"linn_results contents: {linn_results}")
-        add_general_points(result_objects, classification_object)
+        add_general_points(result_objects, classification_object, save=True)
         add_gender_points(result_objects, classification_object, gender="M")
         add_gender_points(result_objects, classification_object, gender="F")
         add_gender_points(result_objects, classification_object, gender="NB")
@@ -129,9 +129,57 @@ def add_classification_results(classification_object, runner_objects, result_obj
                     f"runner {runner} had {kings_general_points} general points in King's Park")
                 classification_results[1].general_points = total_general_points
                 classification_results[1].save()
+    elif len(race_file_objects) == 3:
+        add_general_points(result_objects, classification_object, save=True)
+        add_gender_points(result_objects, classification_object, gender="M")
+        add_gender_points(result_objects, classification_object, gender="F")
+        add_gender_points(result_objects, classification_object, gender="NB")
+        add_category_points(result_objects, classification_object)
+
+        runners = Runner.objects.all()
+        runners_to_exclude = []
+        runners_to_exclude_pks = []
+        for runner in runners:
+            classification_results = ClassificationResult.objects.filter(
+                runner=runner)
+            if len(classification_results) < 2:
+                # Remove runner from Rouken Glen classification result
+                rouken_classification_result = ClassificationResult.objects.filter(
+                    classification=classification_object, runner=runner)
+                rouken_classification_result.delete()
+                runners_to_exclude.append(runner)
+                runners_to_exclude_pks.append(runner.pk)
+
+        kings_race_results = Result.objects.filter(
+            race__season=season, race__park="KP").exclude(runner__in=runners_to_exclude)
+        linn_race_results = Result.objects.filter(
+            race__season=season, race__park="LP").exclude(runner__in=runners_to_exclude)
+        rouken_race_results = Result.objects.filter(
+            race__season=season, race__park="RG").exclude(runner__in=runners_to_exclude)
+
+        logger.debug(
+            f"kings_race_results after excluding non-qualifying runners: {kings_race_results}")
+
+        kings_general_points = add_general_points(
+            kings_race_results, classification_object, save=False)
+        logger.debug(
+            f"The classification results with general points added after calling add_general_points with kings_race_results: {kings_general_points}")
+        linn_general_points = add_general_points(
+            linn_race_results, classification_object, save=False)
+        rouken_general_points = add_general_points(
+            rouken_race_results, classification_object, save=False)
+        total_general_points = kings_general_points + \
+            linn_general_points + rouken_general_points
+
+        runners = Runner.objects.all().exclude(pk__in=runners_to_exclude_pks)
+        for runner in runners:
+            rouken_classification_result = ClassificationResult.objects.get(
+                classification=classification_object, runner=runner)
+            rouken_classification_result.general_points = total_general_points
+            rouken_classification_result.save()
 
 
-def add_general_points(result_objects, classification_object):
+def add_general_points(result_objects, classification_object, save):
     results_with_points = []
     for i in range(len(result_objects)):
         logger.debug(
@@ -143,12 +191,14 @@ def add_general_points(result_objects, classification_object):
     logger.debug(
         f"results_with_points: {results_with_points}")
 
-    for result in results_with_points:
-        ClassificationResult.objects.create(
-            classification=classification_object,
-            runner=result["result_object"].runner,
-            general_points=result["general_points"]
-        )
+    if save == True:
+        for result in results_with_points:
+            ClassificationResult.objects.create(
+                classification=classification_object,
+                runner=result["result_object"].runner,
+                general_points=result["general_points"]
+            )
+    return results_with_points
 
 
 def add_category_points(result_objects, classification_object):
@@ -348,4 +398,4 @@ def handle_race_file(file, season):
     classification_object = add_classification(season, race_object)
 
     add_classification_results(
-        classification_object, runner_objects, result_objects, race_object)
+        classification_object, runner_objects, result_objects, race_object, season)
